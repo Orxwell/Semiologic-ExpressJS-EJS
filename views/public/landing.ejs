@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta
+      charset="UTF-8"
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="<%= SERVER_URL %>/api/icon/favicon.ico<%= `?v=${Date.now()}` %>"
+    />
+
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="<%= SERVER_URL %>/api/css/public/landing.css<%= `?v=${Date.now()}` %>"
+    />
+
+    <title><%= title %></title>
+  </head>
+
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+    <script type="module">
+      const backgroundMusic = new Howl({
+        src   : ['<%= SERVER_URL %>/api/audio/background_loop.mp3'],
+        loop  : true,
+        volume: 0.02
+      });
+
+      let isMusicPlaying = false;
+
+      import * as PIXI from "https://cdn.jsdelivr.net/npm/pixi.js@8.8.1/dist/pixi.mjs";
+    
+      document.addEventListener("DOMContentLoaded", async () => {
+        const app = new PIXI.Application();
+        await app.init({
+          width      : window.innerWidth,
+          height     : window.innerHeight,
+          resolution : 1,
+          autoDensity: true
+        });
+        document.body.appendChild(app.canvas);
+
+        const map_of_assets = {
+          character_1: '<%= SERVER_URL %>/api/img/characters/character_1.png<%= `?v=${Date.now()}` %>',
+          character_2: '<%= SERVER_URL %>/api/img/characters/character_2.png<%= `?v=${Date.now()}` %>',
+
+          stage_1: '<%= SERVER_URL %>/api/img/stages/stage_1.png<%= `?v=${Date.now()}` %>',
+          stage_2: '<%= SERVER_URL %>/api/img/stages/stage_2.png<%= `?v=${Date.now()}` %>',
+          stage_3: '<%= SERVER_URL %>/api/img/stages/stage_3.png<%= `?v=${Date.now()}` %>',
+          stage_4: '<%= SERVER_URL %>/api/img/stages/stage_4.png<%= `?v=${Date.now()}` %>',
+        };
+
+        const loader = PIXI.Assets;
+        const assets = await loader.load(Object.values(map_of_assets));
+
+        const stages = {
+          stage1: new PIXI.Container(),
+          stage2: new PIXI.Container(),
+          stage3: new PIXI.Container(),
+          stage4: new PIXI.Container(),
+        };
+
+        const list_of_stages = [stages.stage1, stages.stage2, stages.stage3, stages.stage4];
+
+        let current_stage = 0;
+        app.stage = list_of_stages[current_stage];
+
+        const map_of_backgrounds = {
+          background_1: new PIXI.Sprite(PIXI.Texture.from(map_of_assets.stage_1)),
+          background_2: new PIXI.Sprite(PIXI.Texture.from(map_of_assets.stage_2)),
+          background_3: new PIXI.Sprite(PIXI.Texture.from(map_of_assets.stage_3)),
+          background_4: new PIXI.Sprite(PIXI.Texture.from(map_of_assets.stage_4)),
+        };
+
+        Object.values(map_of_backgrounds).forEach(bg => {
+          bg.alpha = 0.7;
+        });
+
+        function resizeBackground(background) {
+          let scale = Math.max(
+            app.renderer.width  / background.texture.width ,
+            app.renderer.height / background.texture.height,
+          );
+
+          background.scale.set(scale);
+
+          background.x = (app.renderer.width - background.width)   / 2;
+          background.y = (app.renderer.height - background.height) / 2;
+        }
+
+        Object.values(map_of_backgrounds).forEach(resizeBackground);
+
+        stages.stage1.addChild(map_of_backgrounds.background_1);
+        stages.stage2.addChild(map_of_backgrounds.background_2);
+        stages.stage3.addChild(map_of_backgrounds.background_3);
+        stages.stage4.addChild(map_of_backgrounds.background_4);
+
+        const list_of_characters = [
+          new PIXI.Sprite(loader.get(map_of_assets.character_1)),
+          new PIXI.Sprite(loader.get(map_of_assets.character_2)),
+        ];
+
+        const character = list_of_characters[0];
+        character.x = 70;
+
+        function positionCharacter() {
+          const groundLevel = app.renderer.height - (character.height / 2);
+          character.y = groundLevel;
+        }
+
+        positionCharacter();
+
+        window.addEventListener("resize", positionCharacter);
+
+        character.anchor.set(0.5);
+
+        function resizeCharacter(character) {
+          let scaleFactor = Math.min(
+            app.renderer.width  / 800,
+            app.renderer.height / 600,
+          );
+          
+          character.scale.set(scaleFactor);
+        }
+
+        list_of_characters.forEach(resizeCharacter);
+
+        app.stage.addChild(character);
+    
+        let keys = {};
+        window.addEventListener("keydown", (e) => keys[e.code] = true) ;
+        window.addEventListener("keyup"  , (e) => keys[e.code] = false);
+
+        const dialogues = [
+          {
+            id: 1, stage: 0, zone: 1, h: 75,
+            text: "Heraclito (535a.C - 470a.C): Pierce argumentó que el signo tendría tres partes, esto viene desde Heraclito: <<Logos>>, <<Epos>> y <<Ergon>>. El logos crea el epos, el cual a su vez designa al ergon (...)",
+          },
+          {
+            id: 2, stage: 0, zone: 2, h: 137,
+            text: "Platón (427a.C - 347a.C): \"Signo, significado del signo y el objeto. tres miembros que hace parte de un todo\". El signo es creado por la necesita de expresión, ayuda o comunicación. \"(...) Los objetos del mundo son estímulos sensoriales que ayudan a reconstruir la verdad a través del recuerdo (...)\". Platón habla del mito de la caverna, para explicar el proceso de conocimiento. Para aquellos hombres en la caverna, las sobras eran su único referente del mundo. El término referente será clave para la comprensión del signo."
+          },
+          {
+            id: 3, stage: 0, zone: 3, h: 140,
+            text: "Aristóteles (348a.C - 322a.C): \"Doctrina de los signos\", \"Teoría de los signos\", \"Arte de los signos\", \"Estudiosos de los signos\" eran términos conocidos en el tiempo de Aristóteles que antecedieron al término \"Semiótica\". Yo, cosa y palabra, una unidad tripartita cuando se habla del signo. Aristóteles llama símbolos a las palabras, y las palabras en si mismas no son ni verdaderas ni falsas, sólo designan cosas. Aristóteles se da cuenta de que los signos pueden ser de diversas clases, los entimemas constan de una oración antecedente y otra consecuente.",
+          },
+          {
+            id: 4, stage: 1, zone: 1, h: 115,
+          text: "Los Estoicos (301 a.C): En los siglos I y II antes de Cristo, se desarrolló nueva luz sobre la compresión del signo, se ve la primera distinción entre significado, significante y objeto, o referente. \"Para los estoicos el significante, o palabra, y el objeto, o referente, eran cuerpos, mientras que el significado no, pues al estar este en relación de referencia al objeto real no puede ser considerado como un cuerpo sino como atributo.\"",
+          },
+          {
+            id: 5, stage: 1, zone: 2, h: 137,
+          text: "Los estoicos tenían un ejemplo que nos ayuda a comprender de mejor manera la relación entre significado, significante y referente: \"Un griego y un bárbaro escuchan una misma palabra, y aunque ambos tienen la representación del objeto referido por esa palabra, uno la entiende y el otro no. Sólo para el griego el objeto tiene un atributo [un lécton, un expresable que le permite volver legible un significado] que le permite que, en su lengua, ese objeto sea significado por la palabra en cuestión.\"",
+          },
+          {
+            id: 6, stage: 1, zone: 3, h: 97,
+            text: "Sexto Empírico (160d.C - 210d.C): Su texto famoso explica la doctrina estóica: \"Tres cosas se juntan: la cosa significada, el significante y la cosa que existe. De estas la cosa significante es la voz; la cosa significada es el mismo objeto que se indica, objeto que nosotros percibimos en su presentación real a través de nuestro pensamiento (...)\".",
+          },
+          {
+            id: 7, stage: 2, zone: 1, h: 90,
+            text: "San Agustín (354d.C - 430d.C): \"De Magistro\" y \"De Doctrina Christiana\", fueron obras de San Agustín en las que trató el tema del signo. El lenguaje humano verbal consta de tres partes: la locución o la palabra que se manifiesta, la palabra interior y la fuerza recursiva mediante la cual la palabra hace venir a la memoria las cosas mismas.",
+          },
+          {
+            id: 8, stage: 2, zone: 2, h: 95,
+            text: "Agustín estableció la distinción entre signos naturales y signos convencionales: \"(...) los naturales son aquellos que sin elección ni deseo alguno, hacen que se conozca mediante ellos (...) El humo es señal de fuego, (...) Los signos convencionales son los que mutuamente se dan todos los vivientes para manifestar los movimientos del alma (...)\".",
+          },
+          {
+            id: 9, stage: 2, zone: 3, h: 112,
+            text: "John Locke (1623 - 1704): Usó el término semiótica en su " +
+              "\"Neuen Organon\" para indicar lo que él denomina <<Conocimiento Simbólico>>." +
+              " Para Locke, el punto de arranque para cualquier conocimiento proviene de" +
+              " la experiencia “Nada hay en el priori, todo brota de los datos que nos" +
+              " proporcionan los sentidos, y sólo a través de ellos es posible acceder a las" +
+              "ideas.\"",
+          },
+          {
+            id: 10, stage: 3, zone: 1, h: 145,
+            text: "Locke reconoce que el ser humano usa las palabras \"como signos de sus " +
+              "concepciones internas\", para poder nombrar la realidad. De manera paralela," +
+              " Ferdinand de Saussure (1857 - 1913) y Charles Sanders Pierce (1839 - 1914)" +
+              " introdujeron términos como la semiología y la semiótica para indicar el estado" +
+              " de los signos. Saussure, desde la vertiente lingüistica reinvindico el derecho a una ciencia \"que estudie la vida de los signos en el seno de la vida social (...) la denominaríamos semiología. (del griego: semeion, \" signo\"). Ella nos enseñaría en qué consisten los signos, y qué leyes los regulan.\".",
+          },
+          {
+            id: 11, stage: 3, zone: 2, h: 155,
+            text: "Saussure, desde la vertiente lingüística, reivindicó una ciencia que" +
+              " estudia la vida de los signos en el seno de la vida social denominada" +
+              " semiología (del griego semeion, ‘signo’). Ella nos argumentaría en qué" +
+              " consisten los signos, qué leyes los regulan. Pierce concibió la semiótica" +
+              " como un campo científico articulado en otro a flexiones de carácter" +
+              " lógico-filosófico que tuviera como objeto específico de su investigación la" +
+              " \"semiosis\", es decir, el significado profundo de \"Un signo, su objeto y su" +
+              " interpretante\". Pierce concibió la semiótica como un campo científico articulado" +
+              " entorno a reflexiones de carácter lógico-filosófico que tuvieran como objeto" +
+              " específico de su investigación la \"semiósis\", es decir, el proceso de" +
+              " significiación donde participan \"un signo, su objeto y su interpretante.\"",
+          },
+          {
+            id: 12, stage: 3, zone: 3, h: 45,
+            text: "¡Hemos llegado al final del recorrido, has encontrado al signo!",
+          },
+        ];
+
+        let activeDialogue = null;
+
+        function removeDialogueBox(app) {
+          const dialogueBox = app.stage.getChildByName("dialogueBox");
+          if (dialogueBox) app.stage.removeChild(dialogueBox);
+
+          const npc = app.stage.getChildByName("npc");
+          if (npc) app.stage.removeChild(npc);
+        }
+
+        function createDialogueBox(app, textContent, h) {
+          removeDialogueBox(app);
+
+          const dialogueContainer = new PIXI.Container();
+          dialogueContainer.label = "dialogueBox";
+
+          const background = new PIXI.Graphics();
+          background
+            .fill({ color: 0x000000, alpha: 0.9 })
+            .setStrokeStyle({ width: 4, color: 0xFFFFFF })
+            .roundRect(0, 0, app.renderer.width - 100, h, 20)
+            .stroke()
+            .fill();
+
+          const dialogueText = new PIXI.Text({
+            text: "",
+            style: {
+              fontFamily: "Arial",
+              fontSize: 20,
+              fontWeight: "bold",
+              fill: "#FFFFFF",
+              wordWrap: true,
+              wordWrapWidth: app.renderer.width - 160
+            }
+          });
+
+          dialogueText.x = 10;
+          dialogueText.y = 10;
+          
+          dialogueContainer.addChild(background)  ;
+          dialogueContainer.addChild(dialogueText);
+
+          dialogueContainer.x = 30;
+          dialogueContainer.y = 10;
+
+          app.stage.addChild(dialogueContainer);
+
+          const npc = new PIXI.Sprite(PIXI.Texture.from(map_of_assets.character_2));
+          npc.label = "npc";
+          npc.x = app.renderer.width - 150;
+          npc.y = 10;
+
+          app.stage.addChild(npc);
+
+          let npcBaseY = npc.y;
+          let time = 0;
+
+          app.ticker.add(() => {
+            if (!app.stage.getChildByName("npc")) return;
+            time += 0.05;
+            npc.y = npcBaseY + Math.sin(time) * 5;
+          });
+
+          let currentText = "";
+          let index       = 0 ;
+
+          const interval = setInterval(() => {
+            if (index < textContent.length) {
+              currentText += textContent[index];
+              dialogueText.text = currentText;
+
+            } else clearInterval(interval);
+
+            index++;
+          }, 50);
+        }
+
+        let currentDialogueId = null;
+
+        function checkTrigger(characterX, stageWidth, app) {
+          const stageThird = stageWidth / 3;
+
+          const newDialogue = dialogues.find(dialogue =>
+            dialogue.stage === current_stage &&
+            characterX >= stageThird * (dialogue.zone - 1) + 30 &&
+            characterX < stageThird * dialogue.zone - 30
+          );
+
+          if (newDialogue) {
+            if (currentDialogueId !== newDialogue.id) {
+              currentDialogueId = newDialogue.id;
+              createDialogueBox(app, newDialogue.text, newDialogue.h);
+            }
+          } else {
+            removeDialogueBox(app);
+            currentDialogueId = null;
+          }
+        }
+
+        app.ticker.add(() => {
+          let moved = false;
+
+          if (keys["ArrowRight"]) {
+            character.x += 5;
+            moved = true;
+          }
+          if (keys["ArrowLeft"]) {
+            character.x -= 5;
+            moved = true;
+          }
+
+          if (moved) {
+            checkTrigger(character.x, app.stage.width, app);
+
+            if (!isMusicPlaying) {
+              backgroundMusic.play();
+              isMusicPlaying = true;
+            }
+          }
+    
+          if (character.x >= app.renderer.width) {
+            current_stage++;
+
+            app.stage.removeChild(character);
+
+            if (current_stage < 4) {
+              character.x = 70;
+
+            } else {
+              current_stage = 3;
+
+              character.x = app.renderer.width;
+            }
+
+            app.stage = list_of_stages[current_stage];
+
+            app.stage.addChild(character);
+          }
+    
+          if (character.x < 0) {
+            current_stage--;
+
+            app.stage.removeChild(character);
+
+            if (current_stage > -1) {
+              character.x = app.renderer.width - 50;
+
+            } else {
+              current_stage = 0;
+
+              character.x = 0;
+            }
+
+            app.stage = list_of_stages[current_stage];
+
+            app.stage.addChild(character);
+          }
+        });
+
+        createDialogueBox(app, "Desplazate con las flechas del teclado....", 50)
+    
+        let lastWidth  = window.innerWidth ;
+        let lastHeight = window.innerHeight;
+    
+        window.addEventListener("resize", () => {
+          app.renderer.resize(window.innerWidth, window.innerHeight);
+          list_of_characters.forEach(resizeCharacter);
+
+          if (window.innerWidth !== lastWidth || window.innerHeight !== lastHeight) {
+            app.renderer.resize(window.innerWidth, window.innerHeight);
+
+            Object.values(map_of_backgrounds).forEach(resizeBackground);
+
+            lastWidth  = window.innerWidth ;
+            lastHeight = window.innerHeight;
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

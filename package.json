@@ -1,0 +1,21 @@
+{
+  "name": "semiologic-express-ejs",
+  "version": "2.0.0",
+  "main": "server.mjs",
+  "scripts": {
+    "test": "echo \"Succesfully test...\" && exit 0",
+    "start": "node .\\src\\server.mjs",
+    "dev": "node --env-file .env .\\src\\server.mjs"
+  },
+  "keywords": [],
+  "author": "OrxwellDev",
+  "license": "ISC",
+  "type": "module",
+  "description": "",
+  "dependencies": {
+    "ejs": "3.1.10",
+    "express": "4.21.2",
+    "morgan": "1.10.0",
+    "phaser": "3.88.2"
+  }
+}

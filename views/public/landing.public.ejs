@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+    
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="<%= SERVER_URL %>/api/icon/favicon.ico<%= `?v=${Date.now()}` %>"
+    />
+
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="<%= SERVER_URL %>/api/css/public/landing.public.css<%= `?v=${Date.now()}` %>"
+    />
+
+    <!-- DEPENDENCIES -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.85.2/dist/phaser-arcade-physics.min.js"></script>
+    
+    <title><%= title %></title>
+  </head>
+
+  <body>
+    <!-- GLOBAL -->
+    <script type="text/javascript" src="<%= SERVER_URL %>/api/js/local.public.js<%= `?v=${Date.now()}` %>"></script>
+    <!-- CHARACTERS -->
+    <script type="text/javascript" src="<%= SERVER_URL %>/api/js/player.public.js<%= `?v=${Date.now()}` %>"></script>
+    <!-- PROPS -->
+    <script type="text/javascript" src="<%= SERVER_URL %>/api/js/cartel.public.js<%= `?v=${Date.now()}` %>"></script>
+    <!-- SCENES -->
+    <script type="text/javascript" src="<%= SERVER_URL %>/api/js/scene_global.public.js<%= `?v=${Date.now()}` %>"></script>
+    <script type="text/javascript" src="<%= SERVER_URL %>/api/js/scene_one.public.js<%= `?v=${Date.now()}` %>"></script>
+    <script type="text/javascript" src="<%= SERVER_URL %>/api/js/scene_two.public.js<%= `?v=${Date.now()}` %>"></script>
+    <script type="text/javascript" src="<%= SERVER_URL %>/api/js/scene_three.public.js<%= `?v=${Date.now()}` %>"></script>
+    <script type="text/javascript" src="<%= SERVER_URL %>/api/js/scene_four.public.js<%= `?v=${Date.now()}` %>"></script>
+    <!--
+    <script type="text/javascript" src="<%= SERVER_URL %>/api/js/scene_credits.public.js<%= `?v=${Date.now()}` %>"></script>
+    -->
+    <!-- CONFIG -->
+    <script type="text/javascript" src="<%= SERVER_URL %>/api/js/config.public.js<%= `?v=${Date.now()}` %>"></script>
+    <!-- GAME -->
+    <script type="text/javascript" src="<%= SERVER_URL %>/api/js/game.public.js<%= `?v=${Date.now()}` %>"></script>
+  </body>
+</html> 

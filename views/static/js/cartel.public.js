@@ -1,10 +1,11 @@
 class Cartel extends Phaser.GameObjects.Container {
   constructor(scene, x, y, imageKey, proximityText, interactText) {
     super(scene, x, y);
-    this.scene            = scene       ;
-    this.interactText     = interactText;
-    this.in_range         = false       ;
-    this.isButtonAPressed = false       ;
+    this.scene                = scene       ;
+    this.interactText         = interactText;
+    this.in_range             = false       ;
+    this.is_buttonA_pressed   = false       ;
+    this.is_animation_running = false       ;
     
     // Agregar la imagen del cartel
     this.image = scene.add.image(0, 0, imageKey);
@@ -34,7 +35,7 @@ class Cartel extends Phaser.GameObjects.Container {
       ).setScale(2.5).setInteractive();
 
       // Asignar el evento para cuando se toque el botón "A"
-      this.buttonA.on('pointerdown', () => this.isButtonAPressed = true);
+      this.buttonA.on('pointerdown', () => this.is_buttonA_pressed = true);
       
     } else {
       this.textContainer_E = this.createInteractionContainer('Presiona E para interactuar', {
@@ -187,16 +188,21 @@ class Cartel extends Phaser.GameObjects.Container {
       else this.textContainer_E.setVisible(true);
       
       // Si se presiona la tecla E o el botón A, mostrar un mensaje o realizar la interacción
-      if (Phaser.Input.Keyboard.JustDown(this.keyE) || this.isButtonAPressed) {
-        this.in_range         = true ;
-        this.isButtonAPressed = false;
+      if (
+        (Phaser.Input.Keyboard.JustDown(this.keyE) || this.is_buttonA_pressed) &&
+        !this.is_animation_running
+      ) {
+        this.in_range           = true ;
+        this.is_buttonA_pressed = false;
 
         this.interactedContainer.setVisible(true);
         this.interactedContainer.animateText(this.interactText, 50);
+
+        this.is_animation_running = true;
       }
     } else {
-      this.in_range = false;
-      this.isButtonAPressed = false;
+      this.in_range           = false;
+      this.is_buttonA_pressed = false;
 
       if (this.glowing) {
         this.glowing = false;
@@ -207,6 +213,8 @@ class Cartel extends Phaser.GameObjects.Container {
       if (LOCAL.is_mobil) this.buttonA.setVisible(false);
       else this.textContainer_E.setVisible(false);
       this.interactedContainer.setVisible(false);
+
+      this.is_animation_running = false;
     }
   }
 }

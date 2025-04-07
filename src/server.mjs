@@ -1,5 +1,6 @@
 import express from 'express';
 import ejs     from 'ejs'    ;
+import morgan  from 'morgan' ;
 
 import router from './routes/exporter.router.mjs';
 import env    from './importers/env.load.mjs'    ;
@@ -11,6 +12,8 @@ app.set('view engine', ejs);
 // Configuring the server
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(morgan('dev'));
+
 
 // Setting the routes
 router.forEach(route => app.use(route));

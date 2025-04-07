@@ -13,3 +13,23 @@ body {
 
   background-color: #000;
 }
+
+#mobile-warning {
+  position: absolute;
+  inset: 0;
+
+  width: 100vw;
+  height: 100vh;
+  
+  display: flex;
+  align-self: center;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  font-size: 200%;
+
+  color: white;
+  background-color: rgba(0, 0, 0, .75);
+  
+  z-index: 999;
+}

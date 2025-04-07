@@ -34,7 +34,7 @@ const handlingKeyValues = ({ listOfKeys=[], method }={}) => {
     }
 
     // Checking if the list of keys matches
-    if (listOfKeys.every(param => givenKeys.includes(param))) {
+    if (!listOfKeys.every(param => givenKeys.includes(param))) {
       return res.status(400)
         .json({ error: `  ~Bad Request: expected keys ${listOfKeys} but got ${givenKeys}.~` });
     }

@@ -1,24 +1,42 @@
-function requestFullScreen() {
-  const elem = document.documentElement;
+function isMobile() {
+  return (
+    /Mobi|Android|iPhone/i.test(navigator.userAgent) ||
+    (navigator.userAgentData && navigator.userAgentData.mobile) ||
+    (window.innerWidth <= 800 && 'ontouchstart' in window)
+  );
+}
 
-  if (elem.requestFullscreen) {
-    elem.requestFullscreen();
-  } else if (elem.mozRequestFullScreen) {    // Firefox
-    elem.mozRequestFullScreen();
-  } else if (elem.webkitRequestFullscreen) { // Chrome, Safari y Opera
-    elem.webkitRequestFullscreen();
-  } else if (elem.msRequestFullscreen) {     // IE/Edge
-    elem.msRequestFullscreen();
+function requestFullScreen() {
+  if (!LOCAL.is_fullscreen) {
+    const elem = document.documentElement;
+
+    try {
+      if (elem.requestFullscreen) elem.requestFullscreen();
+      else if (elem.mozRequestFullScreen)    elem.mozRequestFullScreen();
+      else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+      else if (elem.msRequestFullscreen)     elem.msRequestFullscreen();
+      
+    } catch (err) { console.warn('Fullscreen error:', err); }
   }
 }
 
-function checkOrientation() {
-  if (screen.orientation.type.startsWith('portrait') && window.innerWidth < 1024) {
-    document.body.innerHTML = "<h1 style='text-align:center;margin-top:50px; color:white;'>Gira tu dispositivo</h1>";
-  }
+function handleOrientation() {
+  const isPortrait = window.innerHeight > window.innerWidth;
+  const warningDiv = document.getElementById('mobile-warning');
 
-  if (screen.orientation.type.startsWith('landscape') && window.innerWidth < 1024) {
-    LOCAL.is_mobil = true;
+  if (isPortrait) {
+    if (!warningDiv) {
+      const div = document.createElement('div');
+      div.id        = 'mobile-warning';
+      div.innerHTML = '🔁 Gira tu dispositivo para jugar en modo horizontal';
+
+      document.body.appendChild(div);
+    }
+
+    document.body.classList.add('rotate-screen');
+  } else {
+    warningDiv?.remove();
+    document.body.classList.remove('rotate-screen');
   }
 }
 
@@ -26,7 +44,8 @@ const LOCAL = {
   player          : null,
   movement_enabled: true,
 
-  is_mobil: false,
+  is_mobil     : false,
+  is_fullscreen: false,
 
   scenes             : [],
   avaliable_scenes   : [],
@@ -108,11 +127,7 @@ const LOCAL = {
     'De manera paralela, Ferdinand de Saussure (1857 - 1913) y ' +
     'Charles Sanders Pierce (1839 - 1914) introdujeron términos como ' +
     'la semiología y la semiótica para indicar el estado de los ' +
-    'signos. Saussure, desde la vertiente lingüistica reinvindico el ' +
-    'derecho a una ciencia \"que estudie la vida de los signos en el ' +
-    'seno de la vida social (...) la denominaríamos semiología. (del ' +
-    'griego: semeion, \" signo\"). Ella nos enseñaría en qué ' +
-    'consisten los signos, y qué leyes los regulan.\".',
+    'signos.',
 
     'Pierce concibió la semiótica como un campo científico ' +
     'articulado en otro a flexiones de carácter lógico-filosófico ' +
@@ -129,9 +144,25 @@ const LOCAL = {
   ],
 };
 
-document.addEventListener('click', requestFullScreen, { once: true });
-document.addEventListener('touchstart', requestFullScreen, { once: true });
+if (isMobile()) {
+  LOCAL.is_mobil = true;
 
-screen.orientation.addEventListener('change', () => location.reload());
+  window.addEventListener('load', handleOrientation);
+  window.addEventListener('resize', () => {
+    handleOrientation();
+    setTimeout(forceCanvasResize, 100);
+  });
+  window.addEventListener('orientationchange', () => {
+    handleOrientation();
+    setTimeout(forceCanvasResize, 300);
+  });
+}
 
-checkOrientation();
+// Pantalla completa al primer click, o toque
+window.addEventListener('click'     , requestFullScreen);
+window.addEventListener('touchstart', requestFullScreen);
+
+document.addEventListener('fullscreenchange', () => {
+  LOCAL.is_fullscreen = !!document.fullscreenElement;
+});
+

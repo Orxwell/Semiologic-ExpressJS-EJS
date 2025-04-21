@@ -18,13 +18,15 @@
     />
 
     <!-- DEPENDENCIES -->
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.85.2/dist/phaser-arcade-physics.min.js"></script>
+    <script type="text/javascript" src="<%= SERVER_URL %>/api/js/phaser.min.js<%= `?v=${Date.now()}` %>"></script>
+    
+    <!-- GAME -->
+    <script type="text/javascript" src="<%= SERVER_URL %>/api/js/game.public.js<%= `?v=${Date.now()}` %>"></script>
     
     <title><%= title %></title>
   </head>
 
   <body>
-    <!-- GAME -->
-    <script type="text/javascript" src="<%= SERVER_URL %>/api/js/game.public.js<%= `?v=${Date.now()}` %>"></script>
+    <div id="game-container"></div>
   </body>
 </html> 

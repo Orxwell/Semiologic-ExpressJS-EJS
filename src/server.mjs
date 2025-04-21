@@ -12,7 +12,7 @@ app.set('view engine', ejs);
 // Configuring the server
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(morgan('dev'));
+if (env.STATE === 'DEV') app.use(morgan('dev'));
 
 
 // Setting the routes

@@ -1,7 +1,9 @@
 const temp = {
-  PORT      : process.env.PORT   ?? 5050       ,
-  DOMAIN    : process.env.DOMAIN ?? 'localhost',
-  SERVER_URL: '',
+  PORT  : process.env.PORT   ?? 5050       ,
+  DOMAIN: process.env.DOMAIN ?? 'localhost',
+
+  SERVER_URL: ''   ,
+  STATE     : 'DEV',
 
   DBNAME_CLUSTER  : process.env.DBNAME_CLUSTER?.toLowerCase()       ,
   USERNAME_CLUSTER: encodeURIComponent(process.env.USERNAME_CLUSTER),
@@ -17,9 +19,11 @@ const temp = {
 };
 
 const env = {
-  PORT      : temp.PORT      ,
-  DOMAIN    : temp.DOMAIN    ,
+  PORT  : temp.PORT  ,
+  DOMAIN: temp.DOMAIN,
+
   SERVER_URL: temp.SERVER_URL,
+  STATE     : temp.STATE     ,
 
   DBNAME_CLUSTER  : temp.DBNAME_CLUSTER  ,
   USERNAME_CLUSTER: temp.USERNAME_CLUSTER,
@@ -36,7 +40,11 @@ const env = {
 
 // Processing Data Before Inserting
 env.SERVER_URL = temp.DOMAIN === 'localhost' ?
-  `http://${temp.DOMAIN}:${temp.PORT}` :
-  `https://${temp.DOMAIN}`;
+  `http://${temp.DOMAIN}:${temp.PORT}`:
+  `https://${temp.DOMAIN}`            ;
+
+env.STATE = temp.DOMAIN === 'localhost' ?
+  'DEV' :
+  'PROD';
 
 export default env;

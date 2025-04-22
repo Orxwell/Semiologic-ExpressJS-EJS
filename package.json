@@ -1,6 +1,6 @@
 {
   "name": "semiologic-express-ejs",
-  "version": "2.2.0",
+  "version": "2.2.2",
   "main": "server.mjs",
   "scripts": {
     "test": "echo \"Succesfully test...\" && exit 0",

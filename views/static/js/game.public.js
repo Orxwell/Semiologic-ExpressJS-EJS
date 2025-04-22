@@ -278,7 +278,7 @@ const CONFIG = {
     update ,
   },
   parent: 'game-container',
-  backgroundColor: '#000', // rgb(81, 120, 145)
+  backgroundColor: '#444', // rgb(81, 120, 145)
 };
 
 const LOCAL = {
@@ -292,7 +292,7 @@ const LOCAL = {
       cartels: [
         { x: 450 , y: CONFIG.scale.height - 105, asset: 'cartelV1', proximityText: 'Instrucciones'                , interactText: '¡Sigue avanzando y recuerda interactuar con los carteles!' },
         { x: 800 , y: CONFIG.scale.height - 105, asset: 'cartelV2', proximityText: 'Heraclito (535a.C - 470a.C)'  , interactText: 'Pierce argumentó que el signo tendría tres partes, esto viene desde Heraclito: <<Logos>>, <<Epos>> y <<Ergon>>. El logos crea el epos, el cual a su vez designa al ergon (...)' },
-        { x: 1100, y: CONFIG.scale.height - 105, asset: 'cartelV2', proximityText: 'Platón (427a.C - 347a.C)'     , interactText: '\"Signo, significado del signo y el objeto. tres miembros que hace parte de un todo\". El signo es creado por la necesita de expresión, ayuda o comunicación. \"(...) Los objetos del mundo son estímulos sensoriales que ayudan a reconstruir la verdad a través del recuerdo (...)\". Platón habla del mito de la caverna, para explicar el proceso de conocimiento. Para aquellos hombres en la caverna, las sobras eran su único referente del mundo. El término referente será clave para la comprensión del signo.' },
+        { x: 1100, y: CONFIG.scale.height - 105, asset: 'cartelV2', proximityText: 'Platón (427a.C - 347a.C)'     , interactText: '\"Signo, significado del signo y el objeto. tres miembros que hace parte de un todo\". El signo es creado por la necesidad de expresión, ayuda o comunicación. \"(...) Los objetos del mundo son estímulos sensoriales que ayudan a reconstruir la verdad a través del recuerdo (...)\". Platón habla del mito de la caverna, para explicar el proceso de conocimiento. Para aquellos hombres en la caverna, las sobras eran su único referente del mundo. El término referente será clave para la comprensión del signo.' },
         { x: 1400, y: CONFIG.scale.height - 105, asset: 'cartelV2', proximityText: 'Aristóteles (348a.C - 322a.C)', interactText: '\"Doctrina de los signos\", \"Teoría de los signos\", \"Arte de los signos\", \"Estudiosos de los signos\" eran términos conocidos en el tiempo de Aristóteles que antecedieron al término \"Semiótica\". Yo, cosa y palabra, una unidad tripartita cuando se habla del signo. Aristóteles llama símbolos a las palabras, y las palabras en si mismas no son ni verdaderas ni falsas, sólo designan cosas. Aristóteles se da cuenta de que los signos pueden ser de diversas clases, los entimemas constan de una oración antecedente y otra consecuente.' },
       ]
     },
@@ -315,7 +315,7 @@ const LOCAL = {
     {
       background: 'backgroundFour',
       cartels: [
-        { x: 600 , y: CONFIG.scale.height - 105, asset: 'cartelV2', proximityText: 'Lock...'  , interactText: 'Locke reconoce que el ser humano usa las palabras \"como signos de sus concepciones internas\", para poder nombrar la realidad. De manera paralela, Ferdinand de Saussure (1857 - 1913) y Charles Sanders Pierce (1839 - 1914) introdujeron términos como la semiología y la semiótica para indicar el estado de los signos.' },
+        { x: 600 , y: CONFIG.scale.height - 105, asset: 'cartelV2', proximityText: 'Lock...'  , interactText: 'Locke reconoce que el ser humano usa las palabras \"como signos de sus concepciones internas\", para poder nombrar la realidad.' },
         { x: 1000, y: CONFIG.scale.height - 105, asset: 'cartelV2', proximityText: 'Pierce...', interactText: 'Pierce concibió la semiótica como un campo científico articulado en otro a flexiones de carácter lógico-filosófico que tuviera como objeto específico de su investigación la \"semiosis\", es decir, el significado profundo de \"Un signo, su objeto y su interpretante\". Pierce concibió la semiótica como un campo científico articulado entorno a reflexiones de carácter lógico-filosófico que tuvieran como objeto específico de su investigación la \"semiósis\", es decir, el proceso de significiación donde participan \"un signo, su objeto y su interpretante.\"' },
         { x: 1600, y: CONFIG.scale.height - 105, asset: 'cartelV1', proximityText: '¡Final!'  , interactText: '¡Hemos llegado al final del recorrido, has encontrado al signo!' },
       ]
@@ -420,6 +420,14 @@ function create () {
 
       // Poner al jugador al frente del todo
       this.children.bringToTop(this.player);
+
+      // Poner los controles adelante, si está en móvil
+      if (LOCAL.is_mobil) {
+        this.children.bringToTop(this.button_left) ;
+        this.children.bringToTop(this.button_right);
+
+        this.children.bringToTop(this.buttonA);
+      }
     });
   
     this.time.delayedCall(1000, () => {
@@ -463,16 +471,16 @@ function create () {
 
     // Botón izquierdo
     this.button_left = this.add.image(
-      rel_pos,
-      this.cameras.main.height - rel_pos - margin,
+      rel_pos + margin,
+      this.cameras.main.height - rel_pos,
       'buttonLeft'
     ).setScale(buttonScale).setInteractive();
     this.isButtonLeftPressed = false;
 
     // Botón derecho
     this.button_right = this.add.image(
-      this.cameras.main.width - this.button_left.width,
-      this.cameras.main.height - rel_pos - margin,
+      this.cameras.main.width - rel_pos - margin,
+      this.cameras.main.height - rel_pos,
       'buttonRight'
     ).setScale(buttonScale).setInteractive();
     this.isButtonRightPressed = false;
